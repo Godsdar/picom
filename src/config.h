@@ -101,6 +101,8 @@ typedef struct options {
 	/// Whether to avoid rebinding pixmap on window damage.
 	bool glx_no_rebind_pixmap;
         /// Length of window transitions
+	c2_lptr_t *transition_blacklist;
+    /// Blacklist for window transition animation.
 	int transition_length;
 	/// For smoothing on the x-coordinate of window animations
 	float transition_pow_x;

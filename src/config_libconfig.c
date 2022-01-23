@@ -365,6 +365,8 @@ char *parse_config_libconfig(options_t *opt, const char *config_file, bool *shad
 	if (config_lookup_float(&cfg, "fade-out-step", &dval))
 		opt->fade_out_step = normalize_d(dval);
 
+	// --transition-blacklist
+	parse_cfg_condlst(&cfg, &opt->transition_blacklist, "transition-exclude");
 	// --transition-length
 	if (config_lookup_int(&cfg, "transition-length", &ival))
 		opt->transition_length = ival;
