@@ -245,17 +245,21 @@ static void configure_win(session_t *ps, xcb_configure_notify_event_t *ce) {
 		}
 		if (mw->newX != ce->x || mw->newY != ce->y || mw->newW != ce->width ||
 		    mw->newH != ce->height) {
-			float moveDx = ((float)t - mw->moveTimeX) / ps->o.transition_length;
-			float moveDy = ((float)t - mw->moveTimeY) / ps->o.transition_length;
-			float moveDw = ((float)t - mw->moveTimeW) / ps->o.transition_length;
-			float moveDh = ((float)t - mw->moveTimeH) / ps->o.transition_length;
+			int transition_length = ps->o.transition_length;
+			if (c2_match(ps, mw, ps->o.transition_blacklist, NULL)) {
+				transition_length = 0;
+			}
+			float moveDx = ((float)t - mw->moveTimeX) / transition_length;
+			float moveDy = ((float)t - mw->moveTimeY) / transition_length;
+			float moveDw = ((float)t - mw->moveTimeW) / transition_length;
+			float moveDh = ((float)t - mw->moveTimeH) / transition_length;
 
 			if (mw->moveTimeX != 0.0 && moveDx < 1.0 && mw->oldX != mw->newX) {
 				float oldMoveDx = pow(
 				    (float)(mw->newX - mw->g.x) / (float)(mw->newX - ce->x),
 				    1 / ps->o.transition_pow_x);
 				float fakeT =
-				    (t - oldMoveDx * (float)ps->o.transition_length);
+				    (t - oldMoveDx * (float)transition_length);
 				/* printf("X: %f,%f\n", fakeT, t); */
 				mw->moveTimeX = isnanf(fakeT) ? t : fakeT;
 			} else {
@@ -266,7 +270,7 @@ static void configure_win(session_t *ps, xcb_configure_notify_event_t *ce) {
 				    (float)(mw->newY - mw->g.y) / (float)(mw->newY - ce->y),
 				    1 / ps->o.transition_pow_y);
 				float fakeT =
-				    (t - oldMoveDy * (float)ps->o.transition_length);
+				    (t - oldMoveDy * (float)transition_length);
 				/* printf("Y: %f,%f\n", fakeT, t); */
 				mw->moveTimeY = isnanf(fakeT) ? t : fakeT;
 			} else {
@@ -277,7 +281,7 @@ static void configure_win(session_t *ps, xcb_configure_notify_event_t *ce) {
 				                          (float)(mw->newW - ce->width),
 				                      1 / ps->o.transition_pow_w);
 				float fakeT =
-				    (t - oldMoveDw * (float)ps->o.transition_length);
+				    (t - oldMoveDw * (float)transition_length);
 				/* printf("Y: %f,%f\n", fakeT, t); */
 				mw->moveTimeW = isnanf(fakeT) ? t : fakeT;
 			} else {
@@ -288,7 +292,7 @@ static void configure_win(session_t *ps, xcb_configure_notify_event_t *ce) {
 				                          (float)(mw->newH - ce->height),
 				                      1 / ps->o.transition_pow_h);
 				float fakeT =
-				    (t - oldMoveDh * (float)ps->o.transition_length);
+				    (t - oldMoveDh * (float)transition_length);
 				/* printf("Y: %f,%f\n", fakeT, t); */
 				mw->moveTimeH = isnanf(fakeT) ? t : fakeT;
 			} else {
